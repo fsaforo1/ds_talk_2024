@@ -1,0 +1,7 @@
+span i[class*="fa-dice-"]:hover {
+	transform: translateY(-5px) scale(1.25);
+}
+
+span i[class*="fa-dice-"] {
+	transition: transform 0.1s ease-in-out;
+}

@@ -1,0 +1,67 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>3D Regression Plane Wave</title>
+<style>
+  body {
+    margin: 0;
+    background: transparent;
+  }
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Set up the scene, camera, and renderer
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Create a plane geometry
+  const geometry = new THREE.PlaneGeometry(10, 10, 50, 50);
+  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+  const plane = new THREE.Mesh(geometry, material);
+  scene.add(plane);
+
+  camera.position.z = 10;
+
+  const n = 50;
+  const random = d3.random.normal(0, 0.2);
+  let data = d3.range(n * n).map(() => [random(), random(), random()]);
+
+  function updatePlane() {
+    const positions = plane.geometry.attributes.position.array;
+    const time = performance.now() / 1000;
+    for (let i = 0; i < positions.length; i += 3) {
+      const x = positions[i];
+      const y = positions[i + 1];
+      const z = Math.sin(x * 2 + time) * Math.cos(y * 2);
+      positions[i + 2] = z;
+    }
+    plane.geometry.attributes.position.needsUpdate = true;
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    updatePlane();
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+});
+</script>
+</body>
+</html>
